@@ -19,11 +19,16 @@ FTP2 = SAMPLES['fastq_ftp2'].tolist()
 TAIL1 = '_1.fastq.gz'
 TAIL2 = '_2.fastq.gz'
 OUTPUTDIR = config["outputDIR"]
+
+
 DOWNLOAD_DICT = dict(zip(SAMPLES.run_accession, SAMPLES.fastq_ftp))
 
 
-print(RUNS)
-#FINAL_FILES1 = [os.path.join(OUTPUTDIR, STUDY,os.path.basename(SAMPLE[0]+TAIL1)) for SAMPLE in SAMPLES.iterrows()]
+
+rule all: 
+    input: 
+       read1 = expand("{outdir}/{study}/{run}/{run}_1.fastq.gz", outdir = OUTPUTDIR, study = STUDY, run = RUNS),
+#        read2 = expand("{outdir}/{study}/{run}/{run}_2.fastq.gz", outdir = OUTPUTDIR, study = STUDY, run = RUNS)
 
 localrules: make_directories
 
@@ -31,5 +36,6 @@ rule make_directories:
     output: directory(expand("{outdir}/{study}/{run}/", outdir = OUTPUTDIR, study = STUDY, run=RUNS))
 
 rule download_fastq1:
-    output: expand("{outdir}/{study}/{run}/{run}_1.fastq.gz", outdir = OUTPUTDIR, study = STUDY, run=RUNS)
-
+    params: ftp= lambda wildcards: DOWNLOAD_DICT[wildcards.run].split(';')[0]
+    output: OUTPUTDIR+'/'+STUDY[0]+'/{run}/{run}_1.fastq.gz'   
+    shell:'curl -L {params.ftp} --output {output}'
