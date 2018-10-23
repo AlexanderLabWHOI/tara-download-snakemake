@@ -1,3 +1,4 @@
-sra_run_info: SraRunInfo.csv
+study_accession: PRJEB6609 
+input_ena_table: input/test.txt 
 outputDIR: /vortexfs1/omics/alexander/data/TARA 
 
