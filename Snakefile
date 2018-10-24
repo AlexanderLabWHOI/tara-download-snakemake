@@ -24,7 +24,8 @@ DOWNLOAD_DICT = dict(zip(SAMPLES.run_accession, SAMPLES.fastq_ftp))
 rule all: 
     input: 
         read1 = expand("{outdir}/{study}/{run}/{run}_1.fastq.gz", outdir = OUTPUTDIR, study = STUDY, run = RUNS),
-        read2 = expand("{outdir}/{study}/{run}/{run}_2.fastq.gz", outdir = OUTPUTDIR, study = STUDY, run = RUNS)
+        read2 = expand("{outdir}/{study}/{run}/{run}_2.fastq.gz", outdir = OUTPUTDIR, study = STUDY, run = RUNS), 
+        md5sum = expand("{outdir}/{study}/{run}/md5sum.tab", outdir = OUTPUTDIR, study = STUDY, run = RUNS)
 
 localrules: make_directories
 
@@ -40,3 +41,13 @@ rule download_fastq2:
     params: ftp= lambda wildcards: DOWNLOAD_DICT[wildcards.run].split(';')[1]
     output: OUTPUTDIR+'/'+STUDY+'/{run}/{run}_2.fastq.gz'
     shell:'curl -L {params.ftp} --output {output}'
+
+rule md5sum:
+    input: read1 = OUTPUTDIR+'/'+STUDY+'/{run}/{run}_1.fastq.gz',
+            read2 = OUTPUTDIR+'/'+STUDY+'/{run}/{run}_2.fastq.gz'
+    output: OUTPUTDIR+'/'+STUDY+'/{run}/md5sum.tab'
+    shell: """
+         md5sum {input.read1} > {output} 
+         md5sum {input.read2} >> {output}
+        """
+
