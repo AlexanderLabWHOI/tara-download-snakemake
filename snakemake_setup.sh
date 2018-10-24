@@ -1,51 +1,50 @@
-
-module load anaconda
+#!/bin/bash
+# Load anaconda 
+#module load anaconda
 
 ##Create conda environment for snakemake 
 #conda env create --name snakemake -f environment.yml
 #source activate snakemake
 
-#or activate existing environment
-source activate snakemake-tara-euk
+# Or activate existing environment
+#source activate snakemake-tara-euk # not working for some reason-- hard coded path below works. IDK why
+#source /vortexfs1/apps/anaconda-5.1/bin/activate snakemake-tara-euk
 
-#install cookie cuter to facilitate download and setup of slurm scripts for submission via sbatch 
-pip install cookiecutter 
-work_dir=$(pwd) #set working directory to current directory-- should be whereever your Snakefile is 
+# Or just have it here.
+#source start-up
 
-# Download snakemake slurm config scripts from github Snakemake-Profiles
-mkdir -p .config
-cd .config
+# Once your conda environment is activated: 
+# Download Slurm profiles from github and install with cookie cutter
+
+conda install cookiecutter
+
 cookiecutter https://github.com/Snakemake-Profiles/slurm.git
 
+cd slurm
 
 
+# Modify slurm configuration file
+
+echo -e 'rerun-incomplete: True
+keep-going: True
+latency-wait: 10
+max-jobs-per-second: 1
+restart-times: 2' >> config.yaml
+
+## create bash script to run your project
+echo -e '
+snakemake   \
+    --jobs 36           \
+        --use-conda                         \
+            --profile ./slurm' > submit-slurm.sh
+
+echo -e '
+snakemake -np                           \
+        --use-conda                         \
+            --profile ./slurm' > submit-slurm_dry.sh    
+
+chmod u+x submit*sh
+
+cd ../
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-cd ../ && chmod u+x slurm/*
