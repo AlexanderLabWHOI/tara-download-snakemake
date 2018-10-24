@@ -27,7 +27,7 @@ rule all:
         read2 = expand("{outdir}/{study}/{run}/{run}_2.fastq.gz", outdir = OUTPUTDIR, study = STUDY, run = RUNS), 
         md5sum = expand("{outdir}/{study}/{run}/md5sum.tab", outdir = OUTPUTDIR, study = STUDY, run = RUNS)
 
-localrules: make_directories
+localrules: make_directories, md5sum
 
 rule make_directories:
     output: directory(expand("{outdir}/{study}/{run}/", outdir = OUTPUTDIR, study = STUDY, run=RUNS))
