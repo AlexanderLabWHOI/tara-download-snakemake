@@ -1,5 +1,5 @@
 
 snakemake   \
-    --jobs 36           \
+    --jobs 100           \
         --use-conda                         \
             --profile ./slurm

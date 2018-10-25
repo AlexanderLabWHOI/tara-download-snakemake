@@ -1,4 +1,5 @@
+
 study_accession: PRJEB6609 
-input_ena_table: input/test.txt 
+input_ena_table: input/PRJEB6609_PE.txt
 outputDIR: /vortexfs1/omics/alexander/data/TARA 
 
