@@ -19,6 +19,9 @@ megahit --preset meta-sensitive -1 [comma sep R1 files] -2 [comma sep R2 files] 
 output: SCRATCHDIR/{output_assembly_dir}/final.contigs.fa
 # output is always the same file - keep in sep dir vs. rename (?)
 
+# Obtain contig stats - QUAST? seqmagik?
+python quast.py SCRATCHDIR/{output_assembly_dir}/final.contigs.fa -o contig_stats_dir # name needs to be distinct?
+
 # Alignment and coverage calculation
 # git clone https://github.com/lh3/bwa.git
 # cd bwa; make
@@ -31,9 +34,13 @@ output: SCRATCHDIR/{output_assembly_dir}/final.contigs.fa
 #
 # bwa mem -t {threads} -k {seed length} {name of coassembly index} {clean reads sep by space}
 bwa mem -t {threads} -k {seed length} {name of coassembly index} -p {clean interleave reads sep by space}
+# samtools to calc coverage (?)
 
 # Eukrep of cleaned reads 
 # pip install EukRep
 
 EukRep -i {output_assembly_dir}/final.contigs.fa} -o {putative euk contigs by coassembly}
 ## Option to keep proks: --prokarya {prok sequence output file}
+## defaults to contigs >3kb...
+
+# Bin putative euk and noneuk contigs
