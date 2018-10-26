@@ -12,4 +12,16 @@ conda env create --name snakemake -f environment.yml
 source activate snakemake
 ```
 
-Once within the `snakemake` environment, execute the snakemake
+Once within the `snakemake` environment, execute the `snakemake_setup.py` script. 
+
+```
+. snakemake_setup.py
+```
+
+This will run the download of cookiecutter as well as pull the slurm profile from https://github.com/Snakemake-Profiles/slurm. You will be prompted to provide default values-- you may leave these blank (recommended) or supply values. 
+
+This only needs to be run once per download of the workflow. 
+
+To execute the snakemake workflow: 
+
+
