@@ -16,6 +16,7 @@ assert(STUDY[0]==config["study_accession"]), 'The study accession provided in th
 
 STUDY=STUDY[0]
 RUNS = SAMPLES['run_accession'].tolist()
+SCRATCHDIR = config["scratch"]
 OUTPUTDIR = config["outputDIR"]
 DOWNLOAD_DICT = dict(zip(SAMPLES.run_accession, SAMPLES.fastq_ftp))
 
@@ -27,27 +28,42 @@ rule all:
         read2 = expand("{outdir}/{study}/{run}/{run}_2.fastq.gz", outdir = OUTPUTDIR, study = STUDY, run = RUNS), 
         md5sum = expand("{outdir}/{study}/{run}/md5sum.tab", outdir = OUTPUTDIR, study = STUDY, run = RUNS)
 
-localrules: make_directories, md5sum
+localrules: make_directories, md5sum, move_fastq1, move_fastq2
 
 rule make_directories:
-    output: directory(expand("{outdir}/{study}/{run}/", outdir = OUTPUTDIR, study = STUDY, run=RUNS))
+    output: directory(expand("{outdir}/{study}/{run}/", outdir = OUTPUTDIR, study = STUDY, run=RUNS)) 
 
 rule download_fastq:
     params: ftp= lambda wildcards: DOWNLOAD_DICT[wildcards.run].split(';')[0]
-    output: OUTPUTDIR+'/'+STUDY+'/{run}/{run}_1.fastq.gz'   
-    shell:'curl -L {params.ftp} --output {output}'
-
+    output: SCRATCHDIR+'/'+STUDY+'/{run}/{run}_1.fastq.gz'   
+    shell:
+        """
+        curl -L {params.ftp} --create-dirs --output {output} 
+        """
 rule download_fastq2:
-    params: ftp= lambda wildcards: DOWNLOAD_DICT[wildcards.run].split(';')[1]
-    output: OUTPUTDIR+'/'+STUDY+'/{run}/{run}_2.fastq.gz'
-    shell:'curl -L {params.ftp} --output {output}'
+    params: ftp= lambda wildcards: DOWNLOAD_DICT[wildcards.run].split(';')[1] 
+    output: SCRATCHDIR+'/'+STUDY+'/{run}/{run}_2.fastq.gz'
+    shell: 
+        """
+        curl -L {params.ftp} --create-dirs --output {output} 
+        """
+
+rule move_fastq1: 
+    input:  SCRATCHDIR+'/'+STUDY+'/{run}/{run}_1.fastq.gz' 
+    output: OUTPUTDIR+'/'+STUDY+'/{run}/{run}_1.fastq.gz' 
+    shell: 'mv {input} {output}' 
+
+rule move_fastq2: 
+    input:  SCRATCHDIR+'/'+STUDY+'/{run}/{run}_2.fastq.gz' 
+    output: OUTPUTDIR+'/'+STUDY+'/{run}/{run}_2.fastq.gz' 
+    shell: 'mv {input} {output}'
 
 rule md5sum:
     input: read1 = OUTPUTDIR+'/'+STUDY+'/{run}/{run}_1.fastq.gz',
             read2 = OUTPUTDIR+'/'+STUDY+'/{run}/{run}_2.fastq.gz'
     output: OUTPUTDIR+'/'+STUDY+'/{run}/md5sum.tab'
-    shell: """
+    shell: 
+         """
          md5sum {input.read1} > {output} 
          md5sum {input.read2} >> {output}
         """
-
