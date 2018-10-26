@@ -1,0 +1,39 @@
+## Draft pipeline to adopt in Snakemake for Tara metaG assemblies
+
+# environment:
+# trimmomatic v0.32
+# bwa 0.7.11 #https://github.com/lh3/bwa
+# EukRep #https://github.com/patrickwest/EukRep
+
+# Start with output from trimmomatic
+# trimmomatic v0.33
+# Need to specify path to adapters to use in trimm:
+# 'Trimmomatic-0.33/adpaters/TruSeq*-PE.fa' # will include TruSeq 2 and 3 for PE reads (?)
+java -jar trimmomatic-0.33.jar PE -phred 33 [R1.fastq.gz] [R2.fastq.gz] [R1_cleaned.fastq.gz] [R1_unpaired.fastq.gz] [R2_cleaned.fastq.gz] [R2_unparied.fastq.gz] ILLUMINACLIP:TruSeq3-PE.fa:2:30:20 LEADING:5 TRAILING:5 SLIDINGWINDOW:25:10 MINLEN:50
+
+# Use output cleaned reads: R1_cleaned.fastq.gz & R2_cleaned.fastq.gz
+# Megahit assembly - megahit =1.1.3
+# Will use dictionary specified in config file for which read pairs are included in n=8 assemblies
+megahit --preset meta-sensitive -1 [comma sep R1 files] -2 [comma sep R2 files] -o [output dir] -m 0.1 -t 15 meta-sensitive: '--min-count 2 --k-min 21 --k-max 99 --k-step 10'
+
+output: SCRATCHDIR/{output_assembly_dir}/final.contigs.fa
+# output is always the same file - keep in sep dir vs. rename (?)
+
+# Alignment and coverage calculation
+# git clone https://github.com/lh3/bwa.git
+# cd bwa; make
+./bwa index {output_assembly_dir}/final.contigs.fa -p {name of coassembly index} 
+# defaults to is, but what about bwtsw (?)
+
+# Interleave R1 and R2 cleaned reads
+# see merge-paired-reads.sh (sortmerna)
+
+#
+# bwa mem -t {threads} -k {seed length} {name of coassembly index} {clean reads sep by space}
+bwa mem -t {threads} -k {seed length} {name of coassembly index} -p {clean interleave reads sep by space}
+
+# Eukrep of cleaned reads 
+# pip install EukRep
+
+EukRep -i {output_assembly_dir}/final.contigs.fa} -o {putative euk contigs by coassembly}
+## Option to keep proks: --prokarya {prok sequence output file}
