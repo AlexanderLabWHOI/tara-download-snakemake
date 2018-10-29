@@ -13,32 +13,19 @@ java -jar trimmomatic-0.33.jar PE -phred 33 [R1.fastq.gz] [R2.fastq.gz] [R1_clea
 
 rule trimmomatic:
     input:
-        #a = "ERR{sample}_1.fastq",
-        #b = "ERR{sample}_2.fastq"
         "PATHtorawdata/{sample}"
     output:
-        #ac="ERR{sample}_cleaned_1.fastq",
-        #as="ERR{sample}_unpaired_1.fastq",
-        #bc="ERR{sample}_cleaned_2.fastq",
-        #bs="ERR{sample}_unpaired_2.fastq"
-        "{sample}_cleaned",
-        "{sample}_unpaired"
+        "{sample}_cleaned"
     shell:
-        #"java -jar trimmomatic-0.33.jar PE -phred 33 {input.a} {input.b} {output.ac} {output.as} {output.bc} {output.bs} ILLUMINACLIP:TruSeq3-PE.fa:2:30:20 LEADING:5 TRAILING:5 SLIDINGWINDOW:25:10 MINLEN:50"
-	"java -jar trimmomatic-0.33.jar PE -phred 33 {input}_R1.fastq.gz {input}_R2.fastq.gz {output}_R1.fastq.gz {output}_R1.fastq.gz {output}_R2.fastq.gz {output}_R2.fastq.gz ILLUMINACLIP:TruSeq3-PE.fa:2:30:20 LEADING:5 TRAILING:5 SLIDINGWINDOW:25:10 MINLEN:50"
-## (?)
+	"java -jar trimmomatic-0.33.jar PE -phred 33 {input}_R1.fastq.gz {input}_R2.fastq.gz {output}_1.fastq.gz {output}_unpaired_1.fastq.gz {output}_2.fastq.gz {output}_unpaired_2.fastq.gz ILLUMINACLIP:TruSeq3-PE.fa:2:30:20 LEADING:5 TRAILING:5 SLIDINGWINDOW:25:10 MINLEN:50"
+
 # Multiple inputs and outputs are confusing.
 # Wildcards - how do I specify the different input and outputs in shell?
-# two options above, a commented out version and one that isn't?
 # best practices for paired reads and then ending up with several distinct outputs - i.e. our proposed metaG workflow.
-# Appropriate to list DATASETS or SAMPLES ahead of time?
-
-# notes on snakemake:
-# use shell for a single line command
-# use script to refere to py or r script
-# use run to refere to a series of python steps
+# How do you list items for sample wildcard, like python? {SAMPLES=x,y,..,z}
 
 # Use output cleaned reads: R1_cleaned.fastq.gz & R2_cleaned.fastq.gz
+## for megahit? and then output is 1 item. How does this work with snakemake?
 # Megahit assembly - megahit =1.1.3
 # Will use dictionary specified in config file for which read pairs are included in n=8 assemblies
 megahit --preset meta-sensitive -1 [comma sep R1 files] -2 [comma sep R2 files] -o [output dir] -m 0.1 -t 15 meta-sensitive: '--min-count 2 --k-min 21 --k-max 99 --k-step 10'
