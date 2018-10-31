@@ -22,6 +22,9 @@ This will run the download of cookiecutter as well as pull the slurm profile fro
 
 This only needs to be run once per download of the workflow. 
 
-To execute the snakemake workflow: 
+It is advisable to first check the total number of jobs required.  
 
+```
+snakemake -np
+```
 
