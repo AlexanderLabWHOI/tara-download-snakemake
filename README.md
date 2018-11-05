@@ -8,7 +8,7 @@ module load anaconda
 
 Create a conda environment using the `environment.yml` file: 
 ```
-conda env create --name snakemake -f environment.yml  
+conda env create --name snakemake --file environment.yaml  
 source activate snakemake
 ```
 
