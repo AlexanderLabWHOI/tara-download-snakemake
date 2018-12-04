@@ -1,4 +1,5 @@
 
 snakemake -np                           \
         --use-conda                         \
-            --profile ./slurm
+            --profile ./slurm \
+	--cluster-config ./slurm/cluster.yaml

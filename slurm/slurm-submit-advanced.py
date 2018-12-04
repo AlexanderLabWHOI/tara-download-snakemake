@@ -124,7 +124,7 @@ slurm_parser.add_argument(
     "-D", "--workdir", help="set working directory for batch script")
 slurm_parser.add_argument(
     "-e", "--error", help="file for batch script's standard error",
-    default="logs/error" if "logs/error" else None)
+    default="" if "" else None)
 slurm_parser.add_argument(
     "-J", "--job-name", help="name of job")
 slurm_parser.add_argument(
@@ -138,7 +138,7 @@ slurm_parser.add_argument(
     type=int)
 slurm_parser.add_argument(
     "-o", "--output", help="file for batch script's standard output",
-    default="logs/output" if "logs/output" else None)
+    default="" if "" else None)
 slurm_parser.add_argument(
     "-p", "--partition", help="partition requested",
     default=_get_default_partition(), type=str)
