@@ -1,5 +1,5 @@
 
-study_accession: PRJEB6609 
-input_ena_table: input/ENA-tables/PRJEB6609_metaT_wenv_PE.txt
+study_accession: PRJEB1787 
+input_ena_table: input/ENA-tables/PRJEB1787_metaG_wenv_PE.txt
 outputDIR: /vortexfs1/omics/data/tara 
 scratch:  /vortexfs1/scratch/hpcuser1
