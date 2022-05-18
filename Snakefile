@@ -5,6 +5,7 @@ import os
 import pandas as pd
 from snakemake.exceptions import print_exception, WorkflowError
 
+
 #----SET VARIABLES----#
 
 SAMPLES = pd.read_table(config["input_ena_table"])
